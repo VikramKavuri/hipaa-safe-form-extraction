@@ -12,11 +12,11 @@ setup: ## Install the package with dev + eval + demo extras
 	$(PY) -m pip install -e ".[dev,eval,demo]"
 
 lint: ## Ruff lint
-	ruff check src tests eval
+	ruff check src tests eval app
 
 format: ## Ruff auto-format
-	ruff format src tests eval
-	ruff check --fix src tests eval
+	ruff format src tests eval app
+	ruff check --fix src tests eval app
 
 typecheck: ## mypy on the package
 	mypy src

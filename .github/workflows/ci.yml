@@ -29,10 +29,10 @@ jobs:
           pip install -e ".[dev,eval]"
 
       - name: Ruff lint
-        run: ruff check src tests eval
+        run: ruff check src tests eval app
 
       - name: Ruff format check
-        run: ruff format --check src tests eval
+        run: ruff format --check src tests eval app
 
       - name: Type check (mypy)
         run: mypy src

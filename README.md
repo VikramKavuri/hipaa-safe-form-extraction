@@ -52,7 +52,8 @@ flowchart LR
     H --> I[Pydantic-validated<br/>CSV row]
 ```
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full data flow and design rationale.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full data flow and design
+rationale, and [`docs/WRITEUP.md`](docs/WRITEUP.md) for the technical deep-dive.
 
 ## Quickstart
 
@@ -76,6 +77,19 @@ formextract info        # show resolved configuration
 ```
 
 All configuration is environment-driven (prefix `FORMEXTRACT_`); see [`.env.example`](.env.example).
+
+## Demo
+
+```bash
+pip install -e ".[demo]"
+python -m eval.generate_synthetic_forms --n 12 --seed 7   # if not already generated
+streamlit run app/streamlit_app.py
+```
+
+- **Sample mode** (no model needed): browse the synthetic forms, their target
+  structured output, and the live evaluation report — runs anywhere.
+- **Live mode** (needs Ollama + Tesseract): upload your own form and watch the real
+  pipeline extract it field-by-field.
 
 ## Results
 
@@ -111,9 +125,10 @@ src/formextract/
   vlm.py            # Qwen2.5-VL calls, page-aware schema sharding
   pipeline.py       # end-to-end orchestration
   cli.py            # `formextract` CLI (Typer)
+app/                # Streamlit demo (sample mode runs without a model)
 tests/              # pytest unit tests (pure logic, no model needed)
-eval/               # ground-truth + metrics + ablations  (Phase 3)
-docs/               # architecture & roadmap
+eval/               # ground-truth + metrics + ablations
+docs/               # architecture, roadmap, technical write-up
 legacy/             # original single-file prototype (provenance)
 ```
 
