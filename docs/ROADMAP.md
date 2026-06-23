@@ -17,12 +17,14 @@ production-grade portfolio piece. Phases are ordered by recruiter signal-per-eff
 - [x] Pytest unit tests for pure logic (parsing, checkbox rules, deskew) — *Ollama not required*
 - [ ] Raise type-hint coverage; mypy in CI
 
-## 🎯 Phase 3 — Evaluation harness, metrics, ablations  ← the differentiator
-- [ ] Synthetic, public-safe sample forms + hand-labeled ground truth
-- [ ] Per-field **precision / recall / exact-match**; normalized edit distance for free-text
-- [ ] **Ablation study**: deskew / CLAHE / checkbox-pass / DPI on↔off, VLM-only vs hybrid
-- [ ] Error-analysis report with failure examples and plots
-- [ ] Re-derive and substantiate the headline accuracy number
+## ✅ Phase 3 — Evaluation harness, metrics, ablations  ← the differentiator
+- [x] Synthetic, public-safe form generator + ground-truth labels (`eval/generate_synthetic_forms.py`)
+- [x] Per-field **precision / recall / exact-match**; normalized edit distance for free-text (`eval/metrics.py`)
+- [x] Markdown report + per-field plot (`eval/run_eval.py`, `eval/reporting.py`)
+- [x] **Ablation runner**: deskew / CLAHE / checkbox-pass / OSD / DPI / VLM-only (`eval/ablations.py`)
+- [x] Mock predictor so the whole harness runs in CI without a GPU; unit-tested metrics
+- [ ] Run `--predictor real` on an Ollama box to publish the true headline number
+- [ ] Error-analysis write-up with real failure examples (after the real run)
 
 ## Phase 4 — Reproducibility & CI
 - [ ] `Makefile` targets (`setup`, `test`, `lint`, `eval`, `demo`)

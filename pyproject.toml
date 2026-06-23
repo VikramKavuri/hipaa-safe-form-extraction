@@ -36,7 +36,6 @@ dev = [
     "pre-commit>=3.7",
 ]
 eval = [
-    "pandas>=2.0",
     "matplotlib>=3.8",
     "rapidfuzz>=3.6",        # fast normalized edit distance for free-text fields
     "tabulate>=0.9",

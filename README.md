@@ -79,17 +79,25 @@ All configuration is environment-driven (prefix `FORMEXTRACT_`); see [`.env.exam
 
 ## Results
 
-> ⚠️ **Honest status:** the original prototype reported ~82% field-level accuracy on a
-> private internal set. That number is being **re-derived reproducibly** on *public,
-> synthetic* forms via the evaluation harness in [`eval/`](eval) — per-field
-> precision/recall/exact-match plus an ablation study quantifying each pipeline
-> component's contribution. Real PHI forms are never committed (see [Privacy](#privacy--data)).
+The original prototype reported ~82% field-level accuracy on a private internal set.
+That claim is now **re-derivable by anyone** via a reproducible evaluation harness
+([`eval/`](eval)) that runs on *public, synthetic* forms — so no PHI is needed to
+reproduce the numbers. It reports **per-field precision / recall / exact-match**,
+fuzzy similarity for free-text, and an **ablation study** isolating each component.
 
-| Field group | Exact-match | Notes |
-|---|---|---|
-| Times / dates | _pending eval_ | structured, high-signal |
-| Free-text narratives | _pending eval_ | scored by normalized edit distance |
-| Checkboxes | _pending eval_ | hybrid classifier vs VLM-only ablation |
+```bash
+python -m eval.generate_synthetic_forms --n 12 --seed 7   # public-safe data
+python -m eval.run_eval --predictor real                  # real numbers (needs Ollama)
+python -m eval.ablations                                  # component contributions
+```
+
+<p align="center"><img src="eval/reports/per_field.png" width="640" alt="Per-field performance"></p>
+
+> ⚠️ **Honesty note:** the committed report (`eval/reports/metrics.md`) and the chart
+> above are produced by a **mock predictor** so the harness runs in CI on any machine
+> without a GPU — *they are not model-accuracy numbers.* Run `--predictor real` on a
+> machine with Ollama to generate the true field-level results, which then replace the
+> demo report. See [`eval/README.md`](eval/README.md) for the mock-vs-real distinction.
 
 ## Project structure
 
