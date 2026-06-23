@@ -4,7 +4,7 @@
 
 **Structured field extraction from handwritten compliance forms — using a vision-language model + classical computer vision, running 100% locally.**
 
-[![CI](https://github.com/VikramKavur/privacy-first-document-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/VikramKavur/privacy-first-document-ai/actions/workflows/ci.yml)
+[![CI](https://github.com/VikramKavuri/privacy-first-document-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/VikramKavuri/privacy-first-document-ai/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
