@@ -5,9 +5,12 @@
 **Structured field extraction from handwritten compliance forms — using a vision-language model + classical computer vision, running 100% locally.**
 
 [![CI](https://github.com/VikramKavuri/hipaa-safe-form-extraction/actions/workflows/ci.yml/badge.svg)](https://github.com/VikramKavuri/hipaa-safe-form-extraction/actions/workflows/ci.yml)
+[![Live demo on HF Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20demo-Hugging%20Face%20Spaces-yellow)](https://huggingface.co/spaces/VikramKavur/hipaa-safe-form-extraction)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**▶️ Try the live demo:** https://huggingface.co/spaces/VikramKavur/hipaa-safe-form-extraction
 
 </div>
 
@@ -79,6 +82,10 @@ formextract info        # show resolved configuration
 All configuration is environment-driven (prefix `FORMEXTRACT_`); see [`.env.example`](.env.example).
 
 ## Demo
+
+**Hosted (no install):** [Sample-mode demo on Hugging Face Spaces](https://huggingface.co/spaces/VikramKavur/hipaa-safe-form-extraction).
+
+**Run locally** (enables Live mode too):
 
 ```bash
 pip install -e ".[demo]"
