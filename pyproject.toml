@@ -48,8 +48,8 @@ demo = [
 formextract = "formextract.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/VikramKavuri/privacy-first-document-ai"
-Repository = "https://github.com/VikramKavuri/privacy-first-document-ai"
+Homepage = "https://github.com/VikramKavuri/hipaa-safe-form-extraction"
+Repository = "https://github.com/VikramKavuri/hipaa-safe-form-extraction"
 
 [tool.setuptools.packages.find]
 where = ["src"]
