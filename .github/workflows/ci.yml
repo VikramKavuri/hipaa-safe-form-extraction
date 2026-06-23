@@ -7,39 +7,43 @@ on:
     branches: [main]
 
 jobs:
-  quality:
+  static:
+    name: Lint / format / types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,eval]"
+      - name: Ruff lint
+        run: ruff check src tests eval app
+      - name: Ruff format check
+        run: ruff format --check src tests eval app
+      - name: Type check (mypy)
+        run: mypy src
+
+  test:
+    name: Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-
-      - name: Install package + dev/eval extras
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev,eval]"
-
-      - name: Ruff lint
-        run: ruff check src tests eval app
-
-      - name: Ruff format check
-        run: ruff format --check src tests eval app
-
-      - name: Type check (mypy)
-        run: mypy src
-
       - name: Run tests
         run: pytest -q
-
       - name: Smoke-test the eval harness (mock predictor, no GPU/model)
         run: |
           python -m eval.generate_synthetic_forms --n 4 --seed 7

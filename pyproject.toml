@@ -74,7 +74,9 @@ ignore = ["E501"]  # line length handled by formatter
 "src/formextract/cli.py" = ["B008"]
 
 [tool.mypy]
-python_version = "3.10"
+# No python_version pin: mypy targets the interpreter it runs under (the CI
+# "static" job runs it on 3.10). Pinning to an older version makes mypy choke on
+# PEP 695 `type` statements present in newer numpy stubs.
 warn_unused_ignores = true
 warn_redundant_casts = true
 ignore_missing_imports = true   # cv2/fitz/ollama ship no stubs

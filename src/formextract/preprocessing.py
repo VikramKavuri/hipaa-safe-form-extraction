@@ -68,7 +68,8 @@ def estimate_skew_angle(gray: np.ndarray) -> float:
             angles.append(ang)
     if not angles:
         return 0.0
-    return float(max(min(np.median(angles), 10), -10))
+    median_angle = float(np.median(angles))
+    return max(min(median_angle, 10.0), -10.0)
 
 
 def _rotate_keep_bounds(gray: np.ndarray, angle_deg: float) -> np.ndarray:

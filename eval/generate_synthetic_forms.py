@@ -277,6 +277,29 @@ def _render_page2(rec: dict) -> Image.Image:
     return img
 
 
+def _save_pdf(pages: list[Image.Image], path: Path) -> None:
+    """Write PIL pages to a multi-page PDF via PyMuPDF.
+
+    Pillow's own PDF writer encodes RGB pages through JPEG, which requires a
+    libjpeg-backed codec that minimal CI environments may lack (KeyError: 'JPEG').
+    PyMuPDF ships its own codecs and embeds the pages as lossless PNG streams.
+    """
+    import io
+
+    import fitz
+
+    doc = fitz.open()
+    try:
+        for img in pages:
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            page = doc.new_page(width=img.width, height=img.height)
+            page.insert_image(fitz.Rect(0, 0, img.width, img.height), stream=buf.getvalue())
+        doc.save(str(path))
+    finally:
+        doc.close()
+
+
 def generate(n: int, seed: int) -> None:
     rng = random.Random(seed)
     SAMPLE_DIR.mkdir(parents=True, exist_ok=True)
@@ -287,8 +310,7 @@ def generate(n: int, seed: int) -> None:
         for i in range(n):
             rec = _make_record(rng)
             src = f"synthetic_form_{i:02d}.pdf"
-            p1, p2 = _render_page1(rec), _render_page2(rec)
-            p1.save(SAMPLE_DIR / src, save_all=True, append_images=[p2], resolution=120.0)
+            _save_pdf([_render_page1(rec), _render_page2(rec)], SAMPLE_DIR / src)
             gt.write(json.dumps({"source_file": src, "fields": rec}) + "\n")
     print(f"Wrote {n} synthetic forms to {SAMPLE_DIR}")
     print(f"Wrote ground truth to {labels_path}")
