@@ -12,12 +12,21 @@ Two modes:
 
 from __future__ import annotations
 
+import os
+import sys
 import tempfile
 from pathlib import Path
+
+# Make the repo root importable so `from app import demo_core` resolves whether this
+# file is launched via `streamlit run app/streamlit_app.py` or by Hugging Face Spaces.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import streamlit as st
 
 from app import demo_core
+
+# On Hugging Face Spaces there is no Ollama/Tesseract, so only Sample mode is offered.
+ON_SPACES = bool(os.environ.get("SPACE_ID"))
 
 st.set_page_config(page_title="Privacy-First Document AI", page_icon="🔒", layout="wide")
 
@@ -27,11 +36,17 @@ st.caption(
     "+ classical CV, running 100% locally."
 )
 
-mode = st.sidebar.radio("Mode", ["Sample (no model)", "Live (Ollama)"])
+modes = ["Sample (no model)"] if ON_SPACES else ["Sample (no model)", "Live (Ollama)"]
+mode = st.sidebar.radio("Mode", modes)
 st.sidebar.markdown(
     "**Sample** browses synthetic, public-safe forms and the eval report — no model "
     "needed.\n\n**Live** runs the real pipeline on your upload (needs Ollama + Tesseract)."
 )
+if ON_SPACES:
+    st.sidebar.info(
+        "Running on Hugging Face Spaces — **Sample mode only**. Live extraction needs "
+        "a local Ollama + Tesseract; clone the repo and run `streamlit run app/streamlit_app.py`."
+    )
 
 
 def _render_fields(fields: dict) -> None:
