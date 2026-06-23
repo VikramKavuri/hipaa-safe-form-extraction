@@ -30,16 +30,23 @@ def render_markdown(report: EvalReport, title: str = "Evaluation report") -> str
         elif fld in report.scalars:
             s = report.scalars[fld]
             cb_rows.append([fld, "scalar", f"{s.exact_rate:.1%}", f"{s.mean_similarity:.3f}"])
-    lines.append(tabulate(cb_rows, headers=["field", "type", "exact", "F1 / sim"], tablefmt="github"))
+    lines.append(
+        tabulate(cb_rows, headers=["field", "type", "exact", "F1 / sim"], tablefmt="github")
+    )
     lines.append("")
 
     # --- Scalar fields ----------------------------------------------------
     lines.append("## Scalar (text) fields")
     rows = sorted(
-        ([f, f"{s.exact_rate:.1%}", f"{s.mean_similarity:.3f}", s.n] for f, s in report.scalars.items()),
+        (
+            [f, f"{s.exact_rate:.1%}", f"{s.mean_similarity:.3f}", s.n]
+            for f, s in report.scalars.items()
+        ),
         key=lambda r: r[1],
     )
-    lines.append(tabulate(rows, headers=["field", "exact-match", "mean sim", "n"], tablefmt="github"))
+    lines.append(
+        tabulate(rows, headers=["field", "exact-match", "mean sim", "n"], tablefmt="github")
+    )
     lines.append("")
 
     # --- Set / list fields ------------------------------------------------
@@ -52,7 +59,9 @@ def render_markdown(report: EvalReport, title: str = "Evaluation report") -> str
         key=lambda r: r[3],
     )
     lines.append(
-        tabulate(rows, headers=["field", "precision", "recall", "F1", "exact-set"], tablefmt="github")
+        tabulate(
+            rows, headers=["field", "precision", "recall", "F1", "exact-set"], tablefmt="github"
+        )
     )
     lines.append("")
     return "\n".join(lines)
@@ -81,8 +90,13 @@ def save_field_plot(report: EvalReport, out_path: str | Path) -> None:
     ax.set_xlim(0, 1)
     ax.set_xlabel("exact-match (scalar) / F1 (set)")
     ax.set_title("Per-field performance")
-    ax.axvline(report.overall_exact_match, color="black", ls="--", lw=1,
-               label=f"overall {report.overall_exact_match:.0%}")
+    ax.axvline(
+        report.overall_exact_match,
+        color="black",
+        ls="--",
+        lw=1,
+        label=f"overall {report.overall_exact_match:.0%}",
+    )
     ax.legend(loc="lower right")
     fig.tight_layout()
     out_path = Path(out_path)

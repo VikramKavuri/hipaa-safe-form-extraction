@@ -35,7 +35,12 @@ def _load_prompt(settings: Settings) -> str:
 
 
 def process_page_image(
-    page_num: int, input_img_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str
+    page_num: int,
+    input_img_path: str,
+    work_dir: str,
+    file_tag: str,
+    settings: Settings,
+    prompt: str,
 ) -> dict:
     log.info("Processing page %d for file tag '%s'", page_num, file_tag)
 
@@ -48,8 +53,11 @@ def process_page_image(
     if settings.checkbox_enabled:
         try:
             checkbox_overrides = checkbox_results_for_page(
-                page_num, corrected_img_path, file_tag=file_tag,
-                outdir=str(settings.checkbox_outdir), debug=settings.checkbox_debug,
+                page_num,
+                corrected_img_path,
+                file_tag=file_tag,
+                outdir=str(settings.checkbox_outdir),
+                debug=settings.checkbox_debug,
                 model_name=settings.vlm_model,
             )
             log.info("Checkbox overrides for page %d: %s", page_num, checkbox_overrides)
@@ -60,18 +68,26 @@ def process_page_image(
     if settings.preprocess_enabled:
         try:
             model_input_path = preprocess_form_image(
-                model_input_path, out_dir=str(settings.preprocess_outdir),
-                do_debug=settings.preprocess_debug_images, do_clahe=settings.use_clahe,
-                do_deskew=settings.do_deskew, tag=f"{file_tag}_page_{page_num}",
+                model_input_path,
+                out_dir=str(settings.preprocess_outdir),
+                do_debug=settings.preprocess_debug_images,
+                do_clahe=settings.use_clahe,
+                do_deskew=settings.do_deskew,
+                tag=f"{file_tag}_page_{page_num}",
             )
             log.info("Preprocessed model image: %s", model_input_path)
         except Exception as e:  # noqa: BLE001
             log.warning("Preprocessing failed, using corrected image. Error: %s", e)
 
     extracted = run_qwen_extraction(
-        page_num, model_input_path, work_dir, file_tag,
-        model_name=settings.vlm_model, prompt=prompt,
-        temperature=settings.temperature, max_new_tokens=settings.max_new_tokens,
+        page_num,
+        model_input_path,
+        work_dir,
+        file_tag,
+        model_name=settings.vlm_model,
+        prompt=prompt,
+        temperature=settings.temperature,
+        max_new_tokens=settings.max_new_tokens,
     )
 
     for k, v in checkbox_overrides.items():
@@ -80,7 +96,9 @@ def process_page_image(
     return extracted
 
 
-def process_pdf(file_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str) -> dict:
+def process_pdf(
+    file_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str
+) -> dict:
     all_data: dict = {}
     doc = fitz.open(file_path)
     try:
@@ -89,13 +107,17 @@ def process_pdf(file_path: str, work_dir: str, file_tag: str, settings: Settings
             pix = page.get_pixmap(dpi=settings.pdf_render_dpi)
             page_img_path = os.path.join(work_dir, f"{file_tag}_page_{page_num}_original.png")
             pix.save(page_img_path)
-            all_data.update(process_page_image(page_num, page_img_path, work_dir, file_tag, settings, prompt))
+            all_data.update(
+                process_page_image(page_num, page_img_path, work_dir, file_tag, settings, prompt)
+            )
     finally:
         doc.close()
     return all_data
 
 
-def process_image_file(file_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str) -> dict:
+def process_image_file(
+    file_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str
+) -> dict:
     ext = Path(file_path).suffix.lower()
     normalized_img_path = os.path.join(work_dir, f"{file_tag}_page_1_original.png")
     if ext == ".png":
@@ -133,7 +155,9 @@ def list_input_files(input_folder: str | os.PathLike) -> list[str]:
     folder = Path(input_folder)
     if not folder.exists() or not folder.is_dir():
         raise FileNotFoundError(f"Input folder not found or is not a directory: {input_folder}")
-    files = [str(p) for p in folder.iterdir() if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS]
+    files = [
+        str(p) for p in folder.iterdir() if p.is_file() and p.suffix.lower() in SUPPORTED_EXTENSIONS
+    ]
     files.sort(key=lambda x: os.path.basename(x).lower())
     return files
 

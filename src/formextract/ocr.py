@@ -20,9 +20,7 @@ BBox = tuple[int, int, int, int]
 def ocr_data(gray_img: np.ndarray, psm: int = 6) -> dict:
     """Return Tesseract word-level data (LSTM engine) for ``gray_img``."""
     config = f"--oem 1 --psm {psm}"
-    return pytesseract.image_to_data(
-        gray_img, output_type=pytesseract.Output.DICT, config=config
-    )
+    return pytesseract.image_to_data(gray_img, output_type=pytesseract.Output.DICT, config=config)
 
 
 def find_line_anchor_bbox(

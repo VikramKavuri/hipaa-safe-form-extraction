@@ -54,9 +54,7 @@ def estimate_skew_angle(gray: np.ndarray) -> float:
     lines are found. Exposed separately so it can be unit-tested deterministically.
     """
     edges = cv2.Canny(gray, 50, 150, apertureSize=3)
-    lines = cv2.HoughLinesP(
-        edges, 1, np.pi / 180, threshold=120, minLineLength=200, maxLineGap=10
-    )
+    lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=120, minLineLength=200, maxLineGap=10)
     if lines is None or len(lines) == 0:
         return 0.0
     angles: list[float] = []
@@ -83,9 +81,7 @@ def _rotate_keep_bounds(gray: np.ndarray, angle_deg: float) -> np.ndarray:
     new_h = int((h * cos) + (w * sin))
     M[0, 2] += (new_w / 2) - center[0]
     M[1, 2] += (new_h / 2) - center[1]
-    return cv2.warpAffine(
-        gray, M, (new_w, new_h), flags=cv2.INTER_CUBIC, borderValue=255
-    )
+    return cv2.warpAffine(gray, M, (new_w, new_h), flags=cv2.INTER_CUBIC, borderValue=255)
 
 
 def preprocess_form_image(
@@ -108,7 +104,8 @@ def preprocess_form_image(
         base = f"{tag}_{base}"
 
     gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-    gray = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
+    # cv2 accepts dst=None at runtime; the stubs are stricter than reality.
+    gray = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)  # type: ignore[call-overload]
     if do_debug:
         cv2.imwrite(os.path.join(out_dir, f"{base}_step1_gray.png"), gray)
 

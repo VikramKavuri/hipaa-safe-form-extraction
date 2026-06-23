@@ -26,7 +26,9 @@ DEFAULT_SAMPLE_DIR = ROOT / "data" / "sample"
 DEFAULT_OUT_DIR = ROOT / "eval" / "reports"
 
 
-def run(predictor_name: str, labels: Path, sample_dir: Path, out_dir: Path, seed: int) -> EvalReport:
+def run(
+    predictor_name: str, labels: Path, sample_dir: Path, out_dir: Path, seed: int
+) -> EvalReport:
     ground_truth = load_ground_truth(labels)
     if not ground_truth:
         raise SystemExit(f"No ground truth found at {labels}. Run generate_synthetic_forms first.")
@@ -53,7 +55,9 @@ def run(predictor_name: str, labels: Path, sample_dir: Path, out_dir: Path, seed
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--predictor", choices=["mock", "real"], default="mock")
     ap.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
     ap.add_argument("--sample-dir", type=Path, default=DEFAULT_SAMPLE_DIR)

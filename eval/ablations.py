@@ -29,7 +29,8 @@ ABLATIONS: dict[str, dict] = {
     "no OSD orientation": {"enable_osd_orientation": False},
     "300 DPI (vs 600)": {"pdf_render_dpi": 300},
     "VLM only (no CV, no checkbox)": {
-        "preprocess_enabled": False, "checkbox_enabled": False,
+        "preprocess_enabled": False,
+        "checkbox_enabled": False,
     },
 }
 
@@ -37,7 +38,9 @@ ABLATIONS: dict[str, dict] = {
 def summarize(rows: list[tuple[str, float, float]]) -> str:
     """Render the ablation result rows as a markdown table (pure → testable)."""
     table = [[name, f"{exact:.1%}", f"{delta:+.1%}"] for name, exact, delta in rows]
-    return tabulate(table, headers=["configuration", "exact-match", "Δ vs baseline"], tablefmt="github")
+    return tabulate(
+        table, headers=["configuration", "exact-match", "Δ vs baseline"], tablefmt="github"
+    )
 
 
 def run(labels: Path | None = None, sample_dir: Path | None = None) -> str:

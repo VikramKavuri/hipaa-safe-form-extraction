@@ -26,8 +26,11 @@ _PAGE1_FIELD_COUNT = 24
 def get_partial_model_for_page(page_num: int) -> type[BaseModel]:
     """Build a Pydantic model containing only the fields for ``page_num``."""
     items = list(FireDrillFields.model_fields.items())
-    page_fields = dict(items[:_PAGE1_FIELD_COUNT]) if page_num == 1 else dict(items[_PAGE1_FIELD_COUNT:])
-    return create_model(
+    page_fields = (
+        dict(items[:_PAGE1_FIELD_COUNT]) if page_num == 1 else dict(items[_PAGE1_FIELD_COUNT:])
+    )
+    # create_model is inherently dynamic; mypy can't match its overloads here.
+    return create_model(  # type: ignore[call-overload]
         f"PartialFields_Page_{page_num}",
         **{name: (field.annotation, ...) for name, field in page_fields.items()},
     )

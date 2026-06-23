@@ -149,37 +149,60 @@ def checkbox_results_for_page(
         return results
 
     gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-    gray = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
+    # cv2 accepts dst=None at runtime; the stubs are stricter than reality.
+    gray = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)  # type: ignore[call-overload]
 
     def group(keywords, options, name, multi, band):
         return extract_checkbox_group(
-            gray, anchor_keywords=keywords, options=options, debug_name=name,
-            multi_select=multi, outdir=outdir, debug=debug, model_name=model_name,
+            gray,
+            anchor_keywords=keywords,
+            options=options,
+            debug_name=name,
+            multi_select=multi,
+            outdir=outdir,
+            debug=debug,
+            model_name=model_name,
             search_band=band,
         )
 
     if page_index == 1:
         band = (0.05, 0.45)
-        sel = group(["method", "alarm", "activ"],
-                    ["Pull Station", "Smoke Detector", "Other"],
-                    f"{file_tag}_p1_method_alarm", True, band)
+        sel = group(
+            ["method", "alarm", "activ"],
+            ["Pull Station", "Smoke Detector", "Other"],
+            f"{file_tag}_p1_method_alarm",
+            True,
+            band,
+        )
         results["Method_of_Alarm_Activation"] = sel if sel else ["NA"]
 
-        sel = group(["evacuation", "type"],
-                    ["Full Evacuation to Outside", "Other"],
-                    f"{file_tag}_p1_evac_type", False, band)
+        sel = group(
+            ["evacuation", "type"],
+            ["Full Evacuation to Outside", "Other"],
+            f"{file_tag}_p1_evac_type",
+            False,
+            band,
+        )
         results["Evacuation_Type"] = sel[0] if sel else "NA"
 
-        sel = group(["type", "evacuation"],
-                    ["Announced", "Unannounced", "Supervised"],
-                    f"{file_tag}_p1_type_of_evac", True, band)
+        sel = group(
+            ["type", "evacuation"],
+            ["Announced", "Unannounced", "Supervised"],
+            f"{file_tag}_p1_type_of_evac",
+            True,
+            band,
+        )
         results["Type_of_Evacuation"] = "; ".join(sel) if sel else "NA"
 
     elif page_index == 2:
         band = (0.65, 0.98)
-        sel = group(["evac", "time", "meet", "locat", "require"],
-                    ["Yes", "No"],
-                    f"{file_tag}_p2_meet_requirement", False, band)
+        sel = group(
+            ["evac", "time", "meet", "locat", "require"],
+            ["Yes", "No"],
+            f"{file_tag}_p2_meet_requirement",
+            False,
+            band,
+        )
         results["Did_evacuation_time_meet_location_requirement"] = sel[0] if sel else "NA"
 
     return results

@@ -29,12 +29,27 @@ W, H = 1000, 1294  # ~ US Letter at ~120 DPI
 
 # --- fake value pools --------------------------------------------------------
 _STREETS = ["Maple", "Oak", "Birch", "Cedar", "Elm", "Pine", "Willow", "Aspen"]
-_AGENCIES = ["Northstar DDSO", "Lakeside Provider Agency", "Hudson Valley DDSO",
-             "Greenfield Residential", "Brookline Care Agency"]
+_AGENCIES = [
+    "Northstar DDSO",
+    "Lakeside Provider Agency",
+    "Hudson Valley DDSO",
+    "Greenfield Residential",
+    "Brookline Care Agency",
+]
 _WEATHER = ["Clear", "Rainy", "Cold and windy", "Snow", "Overcast", "Mild"]
 _PART_OF_DAY = ["Morning", "Afternoon", "Evening", "Overnight"]
-_NAMES = ["J. Rivera", "A. Cole", "M. Singh", "T. Nguyen", "R. Patel", "D. Okafor",
-          "S. Brooks", "L. Romano", "K. Adams", "P. Costa"]
+_NAMES = [
+    "J. Rivera",
+    "A. Cole",
+    "M. Singh",
+    "T. Nguyen",
+    "R. Patel",
+    "D. Okafor",
+    "S. Brooks",
+    "L. Romano",
+    "K. Adams",
+    "P. Costa",
+]
 _YESNO = ["Yes", "No"]
 _ALARM = ["Pull Station", "Smoke Detector", "Other"]
 _EVAC_TYPE = ["Full Evacuation to Outside", "Other"]
@@ -63,36 +78,49 @@ def _make_record(rng: random.Random) -> dict:
     return {
         "Site_Address": f"{rng.randint(10, 990)} {rng.choice(_STREETS)} St",
         "DDSO_Provider_Agency": rng.choice(_AGENCIES),
-        "Date": f"{rng.randint(1,12):02d}/{rng.randint(1,28):02d}/2026",
-        "Time_Evacuation_Started": f"{rng.randint(1,12)}:{rng.randint(0,59):02d} {rng.choice(['AM','PM'])}",
+        "Date": f"{rng.randint(1, 12):02d}/{rng.randint(1, 28):02d}/2026",
+        "Time_Evacuation_Started": f"{rng.randint(1, 12)}:{rng.randint(0, 59):02d} {rng.choice(['AM', 'PM'])}",
         "Part_of_Day": rng.choice(_PART_OF_DAY),
-        "Total_time_to_evacuate_to_ground": f"{rng.randint(1,5)} min {rng.randint(0,59)} sec",
-        "Total_time_for_all_to_reach_safe_area": f"{rng.randint(2,8)} min",
+        "Total_time_to_evacuate_to_ground": f"{rng.randint(1, 5)} min {rng.randint(0, 59)} sec",
+        "Total_time_for_all_to_reach_safe_area": f"{rng.randint(2, 8)} min",
         "Centrally_Monitored_Fire_Alarm_Station": rng.choice(_YESNO),
-        "Time_Monitoring_Station_Notified_of_Drill": f"{rng.randint(1,12)}:{rng.randint(0,59):02d} {rng.choice(['AM','PM'])}",
-        "Time_Monitoring_Station_Reactivated": f"{rng.randint(1,12)}:{rng.randint(0,59):02d} {rng.choice(['AM','PM'])}",
-        "Time_Monitoring_Station_Received_Alarm": f"{rng.randint(1,12)}:{rng.randint(0,59):02d} {rng.choice(['AM','PM'])}",
+        "Time_Monitoring_Station_Notified_of_Drill": f"{rng.randint(1, 12)}:{rng.randint(0, 59):02d} {rng.choice(['AM', 'PM'])}",
+        "Time_Monitoring_Station_Reactivated": f"{rng.randint(1, 12)}:{rng.randint(0, 59):02d} {rng.choice(['AM', 'PM'])}",
+        "Time_Monitoring_Station_Received_Alarm": f"{rng.randint(1, 12)}:{rng.randint(0, 59):02d} {rng.choice(['AM', 'PM'])}",
         "Weather_Conditions": rng.choice(_WEATHER),
         "Method_of_Alarm_Activation": alarm,
         "Evacuation_Type": rng.choice(_EVAC_TYPE),
         "Type_of_Evacuation": "; ".join(type_evac),
-        "Location_of_Simulated_Fire": rng.choice(["Kitchen", "Garage", "Bedroom 2", "Basement", "Hallway"]),
-        "Blocked_Exits_by_Simulated_Fire": rng.choice(["Front door", "Side exit", "None", "Rear door"]),
+        "Location_of_Simulated_Fire": rng.choice(
+            ["Kitchen", "Garage", "Bedroom 2", "Basement", "Hallway"]
+        ),
+        "Blocked_Exits_by_Simulated_Fire": rng.choice(
+            ["Front door", "Side exit", "None", "Rear door"]
+        ),
         "Location": rng.choice(["1st floor", "2nd floor", "Whole house"]),
         "Name_of_Individuals_Residing_in_the_Residence": residents,
-        "including_away_at_the_Time_of_the_Evacuation": rng.sample(residents, rng.randint(0, 1)) or ["NA"],
-        "To_Evacuate": [f"{rng.randint(1,3)}:{rng.randint(0,59):02d}" for _ in residents],
-        "At_Safe_Area": [f"{rng.randint(2,5)}:{rng.randint(0,59):02d}" for _ in residents],
-        "Evacuation_Details": [rng.choice(["Used main exit", "Assisted", "Independent", "Wheelchair ramp"]) for _ in residents],
-        "Description_of_evacuation": rng.choice([
-            "All residents evacuated calmly via the main exit.",
-            "Staff assisted one resident with mobility needs.",
-            "Drill proceeded without incident.",
-        ]),
-        "Problems_noted_correction_actions_taken": rng.choice([
-            "None noted.", "Exit light was dim; bulb replaced.",
-            "Resident needed prompting; review plan.",
-        ]),
+        "including_away_at_the_Time_of_the_Evacuation": rng.sample(residents, rng.randint(0, 1))
+        or ["NA"],
+        "To_Evacuate": [f"{rng.randint(1, 3)}:{rng.randint(0, 59):02d}" for _ in residents],
+        "At_Safe_Area": [f"{rng.randint(2, 5)}:{rng.randint(0, 59):02d}" for _ in residents],
+        "Evacuation_Details": [
+            rng.choice(["Used main exit", "Assisted", "Independent", "Wheelchair ramp"])
+            for _ in residents
+        ],
+        "Description_of_evacuation": rng.choice(
+            [
+                "All residents evacuated calmly via the main exit.",
+                "Staff assisted one resident with mobility needs.",
+                "Drill proceeded without incident.",
+            ]
+        ),
+        "Problems_noted_correction_actions_taken": rng.choice(
+            [
+                "None noted.",
+                "Exit light was dim; bulb replaced.",
+                "Resident needed prompting; review plan.",
+            ]
+        ),
         "Did_Evacuation_proceed_in_accordance_with_evac_plan": rng.choice(_YESNO),
         "Were_all_exits_escape_route_clear_of_obstructions": rng.choice(_YESNO),
         "Did_alarms_bells_horns_strobes_function_properly": rng.choice(_YESNO),
@@ -101,7 +129,9 @@ def _make_record(rng: random.Random) -> dict:
     }
 
 
-def _checkbox_row(d: ImageDraw.ImageDraw, x: int, y: int, label: str, options: list[str], checked: set[str]) -> None:
+def _checkbox_row(
+    d: ImageDraw.ImageDraw, x: int, y: int, label: str, options: list[str], checked: set[str]
+) -> None:
     d.text((x, y), label, font=LABEL, fill="black")
     ox = x + 470
     for opt in options:
@@ -138,7 +168,9 @@ def _kv(d: ImageDraw.ImageDraw, x: int, y: int, label: str, value: str) -> None:
 def _render_page1(rec: dict) -> Image.Image:
     img = Image.new("RGB", (W, H), "white")
     d = ImageDraw.Draw(img)
-    d.text((W // 2 - 220, 30), "RESIDENTIAL FIRE DRILL / EVACUATION RECORD", font=LABEL, fill="black")
+    d.text(
+        (W // 2 - 220, 30), "RESIDENTIAL FIRE DRILL / EVACUATION RECORD", font=LABEL, fill="black"
+    )
     d.line([40, 70, W - 40, 70], fill="black", width=2)
     y = 110
     for label, key in [
@@ -159,11 +191,20 @@ def _render_page1(rec: dict) -> Image.Image:
         y += 44
 
     y += 10
-    _checkbox_row(d, 50, y, "Method of Alarm Activation", _ALARM, set(rec["Method_of_Alarm_Activation"]))
+    _checkbox_row(
+        d, 50, y, "Method of Alarm Activation", _ALARM, set(rec["Method_of_Alarm_Activation"])
+    )
     y += 44
     _checkbox_row(d, 50, y, "Evacuation Type", _EVAC_TYPE, {rec["Evacuation_Type"]})
     y += 44
-    _checkbox_row(d, 50, y, "Type of Evacuation", _TYPE_OF_EVAC, set(str(rec["Type_of_Evacuation"]).split("; ")))
+    _checkbox_row(
+        d,
+        50,
+        y,
+        "Type of Evacuation",
+        _TYPE_OF_EVAC,
+        set(str(rec["Type_of_Evacuation"]).split("; ")),
+    )
     y += 54
     for label, key in [
         ("Location of Simulated Fire", "Location_of_Simulated_Fire"),
@@ -172,7 +213,12 @@ def _render_page1(rec: dict) -> Image.Image:
     ]:
         _kv(d, 50, y, label, str(rec[key]))
         y += 44
-    d.text((50, H - 40), "Page 1 of 2  —  SYNTHETIC SAMPLE (no real data)", font=SMALL, fill=(150, 150, 150))
+    d.text(
+        (50, H - 40),
+        "Page 1 of 2  —  SYNTHETIC SAMPLE (no real data)",
+        font=SMALL,
+        fill=(150, 150, 150),
+    )
     return img
 
 
@@ -214,9 +260,20 @@ def _render_page2(rec: dict) -> Image.Image:
         y += 44
 
     y += 20
-    _checkbox_row(d, 50, y, "Did evacuation time meet requirement", _YESNO,
-                  {rec["Did_evacuation_time_meet_location_requirement"]})
-    d.text((50, H - 40), "Page 2 of 2  —  SYNTHETIC SAMPLE (no real data)", font=SMALL, fill=(150, 150, 150))
+    _checkbox_row(
+        d,
+        50,
+        y,
+        "Did evacuation time meet requirement",
+        _YESNO,
+        {rec["Did_evacuation_time_meet_location_requirement"]},
+    )
+    d.text(
+        (50, H - 40),
+        "Page 2 of 2  —  SYNTHETIC SAMPLE (no real data)",
+        font=SMALL,
+        fill=(150, 150, 150),
+    )
     return img
 
 

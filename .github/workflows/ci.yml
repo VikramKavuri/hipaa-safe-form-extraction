@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install package + dev/eval extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,eval]"
+
+      - name: Ruff lint
+        run: ruff check src tests eval
+
+      - name: Ruff format check
+        run: ruff format --check src tests eval
+
+      - name: Type check (mypy)
+        run: mypy src
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Smoke-test the eval harness (mock predictor, no GPU/model)
+        run: |
+          python -m eval.generate_synthetic_forms --n 4 --seed 7
+          python -m eval.run_eval --predictor mock

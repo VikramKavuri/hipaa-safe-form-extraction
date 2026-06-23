@@ -32,8 +32,7 @@ def load_ground_truth(labels_path: str | Path) -> dict[str, dict[str, Any]]:
 
 
 class Predictor(Protocol):
-    def predict(self, source_file: str, fields: dict[str, Any]) -> dict[str, Any]:
-        ...
+    def predict(self, source_file: str, fields: dict[str, Any]) -> dict[str, Any]: ...
 
 
 class RealPredictor:

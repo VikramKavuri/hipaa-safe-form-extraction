@@ -18,7 +18,9 @@ from .config import get_settings
 from .logging_utils import configure_logging
 from .pipeline import run_batch
 
-app = typer.Typer(add_completion=False, help="Privacy-first local document AI for fire-drill forms.")
+app = typer.Typer(
+    add_completion=False, help="Privacy-first local document AI for fire-drill forms."
+)
 
 
 @app.command()
