@@ -1,0 +1,40 @@
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+
+# ----- Tooling caches -----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ----- Project outputs / debug artifacts (never commit) -----
+preprocessed_batch/
+checkbox_debug_batch/
+*.csv
+!eval/ground_truth/*.csv
+outputs/
+runs/
+
+# ----- PRIVACY: never commit real PHI / forms -----
+# Only synthetic, public-safe samples live under data/sample/.
+data/private/
+data/raw/
+*.pdf
+!data/sample/**/*.pdf
+
+# ----- OS / editors -----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
