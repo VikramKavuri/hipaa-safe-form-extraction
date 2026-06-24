@@ -1,18 +1,18 @@
-"""Vision-language-model extraction via Ollama with constrained decoding.
+"""Vision-language-model extraction with constrained / schema-guided decoding.
 
 The form spans two pages; we split the schema by field order so each page only
 has to fill the fields that actually appear on it. The per-page Pydantic model's
-JSON Schema is passed as ``format=...``, forcing the model to emit valid,
-typed JSON (constrained decoding) instead of free-form text.
+JSON Schema steers generation — passed as a hard decoding grammar to Ollama, or
+folded into the prompt for the hosted HF backend (see :mod:`.backends`).
 """
 
 from __future__ import annotations
 
 import os
 
-import ollama
 from pydantic import BaseModel, create_model
 
+from .backends import VLMBackend
 from .logging_utils import get_logger
 from .parsing import parse_model_json
 from .schema import FireDrillFields
@@ -42,28 +42,21 @@ def run_qwen_extraction(
     work_dir: str,
     file_tag: str,
     *,
-    model_name: str,
+    backend: VLMBackend,
     prompt: str,
     temperature: float = 0.0,
     max_new_tokens: int = 512,
 ) -> dict:
     """Send one page image to the VLM and parse its structured JSON response."""
     partial_model = get_partial_model_for_page(page_num)
-    log.info("Sending page %d image to VLM (%s)...", page_num, model_name)
-    response = ollama.chat(
-        model=model_name,
-        messages=[{"role": "system", "content": str(prompt), "images": [model_input_path]}],
-        format=partial_model.model_json_schema(),
-        options={
-            "temperature": temperature,
-            "top_p": 1.0,
-            "top_k": 1,
-            "do_sample": False,
-            "max_new_tokens": max_new_tokens,
-        },
+    log.info("Sending page %d image to the VLM...", page_num)
+    model_text = backend.chat(
+        prompt=str(prompt),
+        image_paths=[model_input_path],
+        json_schema=partial_model.model_json_schema(),
+        temperature=temperature,
+        max_tokens=max_new_tokens,
     )
-
-    model_text = response.get("message", {}).get("content", "").strip()
     log.debug("Model output (truncated): %s", model_text[:500])
 
     out_path = os.path.join(work_dir, f"{file_tag}_page_{page_num}_output.json.txt")

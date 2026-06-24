@@ -20,6 +20,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 from PIL import Image
 
+from .backends import VLMBackend, get_backend
 from .checkbox import checkbox_results_for_page
 from .config import CHECKBOX_FIELDS, FIELD_LIST, SUPPORTED_EXTENSIONS, Settings
 from .logging_utils import get_logger
@@ -41,6 +42,7 @@ def process_page_image(
     file_tag: str,
     settings: Settings,
     prompt: str,
+    backend: VLMBackend,
 ) -> dict:
     log.info("Processing page %d for file tag '%s'", page_num, file_tag)
 
@@ -58,7 +60,7 @@ def process_page_image(
                 file_tag=file_tag,
                 outdir=str(settings.checkbox_outdir),
                 debug=settings.checkbox_debug,
-                model_name=settings.vlm_model,
+                backend=backend,
             )
             log.info("Checkbox overrides for page %d: %s", page_num, checkbox_overrides)
         except Exception as e:  # noqa: BLE001
@@ -84,7 +86,7 @@ def process_page_image(
         model_input_path,
         work_dir,
         file_tag,
-        model_name=settings.vlm_model,
+        backend=backend,
         prompt=prompt,
         temperature=settings.temperature,
         max_new_tokens=settings.max_new_tokens,
@@ -97,7 +99,12 @@ def process_page_image(
 
 
 def process_pdf(
-    file_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str
+    file_path: str,
+    work_dir: str,
+    file_tag: str,
+    settings: Settings,
+    prompt: str,
+    backend: VLMBackend,
 ) -> dict:
     all_data: dict = {}
     doc = fitz.open(file_path)
@@ -108,7 +115,9 @@ def process_pdf(
             page_img_path = os.path.join(work_dir, f"{file_tag}_page_{page_num}_original.png")
             pix.save(page_img_path)
             all_data.update(
-                process_page_image(page_num, page_img_path, work_dir, file_tag, settings, prompt)
+                process_page_image(
+                    page_num, page_img_path, work_dir, file_tag, settings, prompt, backend
+                )
             )
     finally:
         doc.close()
@@ -116,7 +125,12 @@ def process_pdf(
 
 
 def process_image_file(
-    file_path: str, work_dir: str, file_tag: str, settings: Settings, prompt: str
+    file_path: str,
+    work_dir: str,
+    file_tag: str,
+    settings: Settings,
+    prompt: str,
+    backend: VLMBackend,
 ) -> dict:
     ext = Path(file_path).suffix.lower()
     normalized_img_path = os.path.join(work_dir, f"{file_tag}_page_1_original.png")
@@ -125,7 +139,7 @@ def process_image_file(
     else:
         with Image.open(file_path) as img:
             img.convert("RGB").save(normalized_img_path)
-    return process_page_image(1, normalized_img_path, work_dir, file_tag, settings, prompt)
+    return process_page_image(1, normalized_img_path, work_dir, file_tag, settings, prompt, backend)
 
 
 def process_single_form(file_path: str, settings: Settings, prompt: str) -> dict[str, str]:
@@ -135,12 +149,13 @@ def process_single_form(file_path: str, settings: Settings, prompt: str) -> dict
     log.info("%s", "=" * 80)
     log.info("Processing file: %s", file_name)
 
+    backend = get_backend(settings)
     with tempfile.TemporaryDirectory(prefix=f"fd_{file_tag}_") as work_dir:
         ext = Path(file_path).suffix.lower()
         if ext == ".pdf":
-            extracted = process_pdf(file_path, work_dir, file_tag, settings, prompt)
+            extracted = process_pdf(file_path, work_dir, file_tag, settings, prompt, backend)
         else:
-            extracted = process_image_file(file_path, work_dir, file_tag, settings, prompt)
+            extracted = process_image_file(file_path, work_dir, file_tag, settings, prompt, backend)
 
     row = {"source_file": file_name}
     for fld in FIELD_LIST:

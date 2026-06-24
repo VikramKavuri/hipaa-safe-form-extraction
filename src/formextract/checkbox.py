@@ -13,8 +13,8 @@ import os
 
 import cv2
 import numpy as np
-import ollama
 
+from .backends import VLMBackend
 from .logging_utils import get_logger
 from .ocr import (
     build_value_roi_after_colon,
@@ -36,7 +36,7 @@ def qwen_select_checked_options_from_roi(
     roi_image_path: str,
     options: list[str],
     multi_select: bool,
-    model_name: str,
+    backend: VLMBackend,
 ) -> list[str]:
     """Classify which of ``options`` are ticked in a cropped checkbox ROI."""
     prompt = f"""
@@ -55,26 +55,22 @@ RULES:
 """.strip()
 
     try:
-        resp = ollama.chat(
-            model=model_name,
-            messages=[{"role": "system", "content": prompt, "images": [roi_image_path]}],
-            format=_SELECTED_SCHEMA,
-            options={
-                "temperature": 0.0,
-                "top_p": 1.0,
-                "top_k": 1,
-                "do_sample": False,
-                "max_new_tokens": 200,
-            },
+        txt = strip_code_fences(
+            backend.chat(
+                prompt=prompt,
+                image_paths=[roi_image_path],
+                json_schema=_SELECTED_SCHEMA,
+                temperature=0.0,
+                max_tokens=200,
+            )
         )
-        txt = strip_code_fences(resp.get("message", {}).get("content", "").strip())
         data = json.loads(txt)
         selected = data.get("selected", ["NA"])
         allowed = set(options) | {"NA"}
         selected = [s for s in selected if s in allowed]
         return _coerce_selection(selected, multi_select)
     except Exception as e:  # noqa: BLE001
-        log.warning("Qwen checkbox classifier failed for ROI %s: %s", roi_image_path, e)
+        log.warning("Checkbox classifier failed for ROI %s: %s", roi_image_path, e)
         return ["NA"]
 
 
@@ -96,7 +92,7 @@ def extract_checkbox_group(
     *,
     outdir: str,
     debug: bool,
-    model_name: str,
+    backend: VLMBackend,
     search_band: tuple[float, float] = (0.05, 0.45),
 ) -> list[str]:
     """Localize one checkbox row and classify its ticked option(s)."""
@@ -128,7 +124,7 @@ def extract_checkbox_group(
         roi_image_path=roi_path,
         options=options,
         multi_select=multi_select,
-        model_name=model_name,
+        backend=backend,
     )
     return [] if selected == ["NA"] else selected
 
@@ -140,7 +136,7 @@ def checkbox_results_for_page(
     file_tag: str,
     outdir: str,
     debug: bool,
-    model_name: str,
+    backend: VLMBackend,
 ) -> dict[str, object]:
     """Return checkbox-derived field overrides for a given page index."""
     results: dict[str, object] = {}
@@ -161,7 +157,7 @@ def checkbox_results_for_page(
             multi_select=multi,
             outdir=outdir,
             debug=debug,
-            model_name=model_name,
+            backend=backend,
             search_band=band,
         )
 

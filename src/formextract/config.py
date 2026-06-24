@@ -88,6 +88,17 @@ class Settings(BaseSettings):
     tesseract_cmd: str = Field(default="")
     vlm_model: str = Field(default="qwen2.5vl:7b")
 
+    # --- VLM backend -------------------------------------------------------
+    # "ollama"  -> local Ollama (fully private; the default).
+    # "hf"      -> Hugging Face Inference Providers (hosted; used by the demo).
+    vlm_backend: str = Field(default="ollama")
+    hf_vlm_model: str = Field(default="Qwen/Qwen2.5-VL-72B-Instruct")
+    hf_provider: str = Field(default="auto")  # e.g. "ovhcloud", "featherless-ai"
+    hf_token: str = Field(default="")  # falls back to HF_TOKEN env / stored login
+    # Downscale uploaded images before sending to the hosted model: vision tokens
+    # (and therefore cost) scale with resolution. ~1 MP keeps forms legible & cheap.
+    hf_max_image_pixels: int = Field(default=1_000_000)
+
     # --- Prompt ------------------------------------------------------------
     prompt_file: Path = Field(
         default=Path(__file__).parent / "prompts" / "extraction_prompt.xml",

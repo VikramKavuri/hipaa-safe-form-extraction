@@ -25,24 +25,34 @@ import streamlit as st
 
 from app import demo_core
 
-# On Hugging Face Spaces there is no Ollama/Tesseract, so only Sample mode is offered.
 ON_SPACES = bool(os.environ.get("SPACE_ID"))
+# "hf" => hosted Qwen2.5-VL via HF Inference Providers (works anywhere, incl. Spaces).
+# "ollama" => local model (Live mode only makes sense off-Spaces).
+HF_BACKEND = os.environ.get("FORMEXTRACT_VLM_BACKEND", "ollama") == "hf"
+LIVE_AVAILABLE = HF_BACKEND or not ON_SPACES
+LIVE_LABEL = "Live (hosted Qwen2.5-VL-72B)" if HF_BACKEND else "Live (local Ollama)"
 
 st.set_page_config(page_title="Privacy-First Document AI", page_icon="🔒", layout="wide")
 
 st.title("🔒 Privacy-First Document AI")
 st.caption(
     "Structured extraction from handwritten compliance forms — vision-language model "
-    "+ classical CV, running 100% locally."
+    "+ classical CV. Production runs 100% locally; this demo can route to a hosted model."
 )
 
-modes = ["Sample (no model)"] if ON_SPACES else ["Sample (no model)", "Live (Ollama)"]
+modes = ["Sample (no model)"] + ([LIVE_LABEL] if LIVE_AVAILABLE else [])
 mode = st.sidebar.radio("Mode", modes)
 st.sidebar.markdown(
     "**Sample** browses synthetic, public-safe forms and the eval report — no model "
-    "needed.\n\n**Live** runs the real pipeline on your upload (needs Ollama + Tesseract)."
+    "needed.\n\n**Live** extracts fields from a form you upload."
 )
-if ON_SPACES:
+if HF_BACKEND:
+    st.sidebar.info(
+        "**Live mode** routes to **Qwen2.5-VL-72B** via Hugging Face Inference Providers so "
+        "it works without local GPUs. The *production* pipeline runs the model fully locally "
+        "(HIPAA-safe) — see the [GitHub repo](https://github.com/VikramKavuri/hipaa-safe-form-extraction)."
+    )
+elif ON_SPACES:
     st.sidebar.info(
         "Running on Hugging Face Spaces — **Sample mode only**. Live extraction needs "
         "a local Ollama + Tesseract; clone the repo and run `streamlit run app/streamlit_app.py`."
@@ -101,14 +111,20 @@ if mode == "Sample (no model)":
 
 else:  # Live mode
     st.subheader("Upload a form (PDF or image)")
-    st.warning("Live mode requires Ollama serving `qwen2.5vl:7b` and Tesseract installed.")
+    if HF_BACKEND:
+        st.caption(
+            "Extraction runs **Qwen2.5-VL-72B** via Hugging Face Inference Providers. "
+            "A 2-page form takes ~15–40s."
+        )
+    else:
+        st.warning("Local Live mode requires Ollama serving `qwen2.5vl:7b` and Tesseract.")
     upload = st.file_uploader("Form file", type=["pdf", "png", "jpg", "jpeg", "tif", "tiff", "bmp"])
     if upload is not None and st.button("Extract", type="primary"):
         suffix = Path(upload.name).suffix
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(upload.getbuffer())
             tmp_path = tmp.name
-        with st.spinner("Running local pipeline (render → OCR → CV → VLM)…"):
+        with st.spinner("Running pipeline (render → OCR → CV → VLM)…"):
             try:
                 result = demo_core.run_live_extraction(tmp_path)
                 st.success("Extraction complete.")
