@@ -12,6 +12,10 @@
 
 **▶️ Try the live demo:** https://huggingface.co/spaces/VikramKavur/hipaa-safe-form-extraction
 
+<img src="docs/how-it-works.gif" width="780" alt="Animated explainer: a messy handwritten form is cleaned up, read by an AI, its checkboxes are checked, and neat structured data comes out — all processed locally so the data never leaves your computer">
+
+<sub>The animation above is a 60-second explainer. Prefer crisp vector? See the <a href="docs/how-it-works.svg">animated SVG</a>.</sub>
+
 </div>
 
 ---
