@@ -83,9 +83,12 @@ All configuration is environment-driven (prefix `FORMEXTRACT_`); see [`.env.exam
 
 ## Demo
 
-**Hosted (no install):** [Sample-mode demo on Hugging Face Spaces](https://huggingface.co/spaces/VikramKavur/hipaa-safe-form-extraction).
+**Hosted (no install):** [Live demo on Hugging Face Spaces](https://huggingface.co/spaces/VikramKavur/hipaa-safe-form-extraction)
+— upload a form and watch it get extracted field-by-field. The hosted demo routes
+inference to **Qwen2.5-VL-72B** via HF Inference Providers (so it needs no GPU); the
+production pipeline runs the model **fully locally** for HIPAA-safety.
 
-**Run locally** (enables Live mode too):
+**Run locally** (fully private, via Ollama):
 
 ```bash
 pip install -e ".[demo]"
@@ -93,10 +96,9 @@ python -m eval.generate_synthetic_forms --n 12 --seed 7   # if not already gener
 streamlit run app/streamlit_app.py
 ```
 
-- **Sample mode** (no model needed): browse the synthetic forms, their target
-  structured output, and the live evaluation report — runs anywhere.
-- **Live mode** (needs Ollama + Tesseract): upload your own form and watch the real
-  pipeline extract it field-by-field.
+The VLM backend is pluggable via `FORMEXTRACT_VLM_BACKEND`:
+- `ollama` (default) — local Qwen2.5-VL, nothing leaves the machine.
+- `hf` — hosted Qwen2.5-VL-72B via HF Inference Providers (what the demo uses).
 
 ## Results
 
