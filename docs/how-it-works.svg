@@ -102,9 +102,9 @@
 
   <!-- privacy footer -->
   <g>
-    <rect x="200" y="404" width="500" height="34" rx="17" fill="#dcfce7"/>
-    <path d="M226 414 a8 8 0 0 1 16 0" fill="none" stroke="#16a34a" stroke-width="3"/>
-    <rect x="223" y="416" width="22" height="18" rx="3" fill="#16a34a"/><circle cx="234" cy="424" r="2.4" fill="#fff"/>
-    <text x="470" y="426" text-anchor="middle" class="foot">100% local  •  your data never leaves your computer</text>
+    <rect x="158" y="404" width="584" height="34" rx="17" fill="#dcfce7"/>
+    <path d="M208 414 a8 8 0 0 1 16 0" fill="none" stroke="#16a34a" stroke-width="3"/>
+    <rect x="205" y="416" width="22" height="18" rx="3" fill="#16a34a"/><circle cx="216" cy="424" r="2.4" fill="#fff"/>
+    <text x="476" y="426" text-anchor="middle" class="foot">HIPAA-safe  •  100% local  •  your data never leaves your computer</text>
   </g>
 </svg>

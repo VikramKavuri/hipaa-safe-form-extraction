@@ -175,11 +175,16 @@ def frame(f: int, total: int) -> Image.Image:
         px = CX[active - 1] + (CX[active] - CX[active - 1]) * sub
     d.ellipse([px - 7, CY + CARD_H // 2 + 18, px + 7, CY + CARD_H // 2 + 32], fill=GREEN)
 
-    # privacy footer
+    # privacy footer (lock + text, centered as a group so it fits any length)
     fy = H - 46
-    d.rounded_rectangle([W // 2 - 250, fy, W // 2 + 250, fy + 34], radius=17, fill=(220, 252, 231))
-    icon_lock(d, W // 2 - 232, fy + 7)
-    _center(d, W // 2 + 12, fy + 8, "100% local  •  your data never leaves your computer", F_SUB, GREEN)
+    text = "HIPAA-safe  •  100% local  •  your data never leaves your computer"
+    tw = d.textlength(text, font=F_SUB)
+    lock_w, gap, pad = 22, 14, 24
+    content_w = lock_w + gap + tw
+    sx = (W - content_w) / 2
+    d.rounded_rectangle([sx - pad, fy, sx + content_w + pad, fy + 34], radius=17, fill=(220, 252, 231))
+    icon_lock(d, sx + 3, fy + 7)
+    d.text((sx + lock_w + gap, fy + 9), text, font=F_SUB, fill=GREEN)
     return img
 
 
